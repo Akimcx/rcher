@@ -13,7 +13,6 @@ fn main() {
     let args = Cli::parse();
     let path = args.path;
 
-    println!("Number of arguments: {}", path.len());
     let mut hasher = DefaultHasher::new();
     if path.len() == 0 {
         let mut input = String::new();
@@ -26,12 +25,12 @@ fn main() {
         let pathbuf = PathBuf::from(&ele);
         if pathbuf.exists() {
             let content = std::fs::read(pathbuf).expect("Cannot read file");
-            println!("content: {:?}", content);
             hasher.write(&content);
         }else {
             hasher.write(ele.as_bytes());
         }
-        println!("hashee: {}", hasher.finish());
+        println!("{}", hasher.finish());
+        hasher = DefaultHasher::new();
     }
 }
 
