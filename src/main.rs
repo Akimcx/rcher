@@ -24,12 +24,20 @@ fn main() {
     for ele in path {
         let pathbuf = PathBuf::from(&ele);
         if pathbuf.exists() {
-            let content = std::fs::read(pathbuf).expect("Cannot read file");
-            hasher.write(&content);
+            // TODO: improve error handeling
+            match std::fs::read(&pathbuf) {
+                Ok(content) => {
+                    hasher.write(&content);
+                    println!("{}",hasher.finish());
+                },
+                Err(error) => {
+                    eprintln!("{:?} {}",pathbuf, error);
+                },
+            }
         }else {
             hasher.write(ele.as_bytes());
+            println!("{}", hasher.finish());
         }
-        println!("{}", hasher.finish());
         hasher = DefaultHasher::new();
     }
 }
