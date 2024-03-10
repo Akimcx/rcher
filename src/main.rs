@@ -1,4 +1,8 @@
-use std::{hash::{DefaultHasher, Hasher}, io, path::PathBuf};
+use std::{
+    hash::{DefaultHasher, Hasher},
+    io,
+    path::PathBuf,
+};
 
 use clap::Parser;
 
@@ -6,7 +10,7 @@ use clap::Parser;
 #[command(version,about,long_about = None)]
 struct Cli {
     // #[arg(short,long)]
-    path: Vec<String>
+    path: Vec<String>,
 }
 
 fn main() {
@@ -16,9 +20,14 @@ fn main() {
     let mut hasher = DefaultHasher::new();
     if path.len() == 0 {
         let mut input = String::new();
-        io::stdin().read_line(&mut input).expect("Hello");
-        hasher.write(input.as_bytes()); 
-        println!("{}",hasher.finish());
+        loop {
+            match io::stdin().read_line(&mut input) {
+                Ok(_) => break,
+                Err(err) => println!("ERROR: {err}"),
+            }
+        }
+        hasher.write(input.trim().as_bytes());
+        println!("{}", hasher.finish());
         return;
     }
     for ele in path {
@@ -28,17 +37,16 @@ fn main() {
             match std::fs::read(&pathbuf) {
                 Ok(content) => {
                     hasher.write(&content);
-                    println!("{}",hasher.finish());
-                },
+                    println!("{}", hasher.finish());
+                }
                 Err(error) => {
-                    eprintln!("{:?} {}",pathbuf, error);
-                },
+                    eprintln!("{:?} {}", pathbuf, error);
+                }
             }
-        }else {
+        } else {
             hasher.write(ele.as_bytes());
             println!("{}", hasher.finish());
         }
         hasher = DefaultHasher::new();
     }
 }
-
