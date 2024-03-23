@@ -19,15 +19,23 @@ fn main() {
 
     let mut hasher = DefaultHasher::new();
     if path.len() == 0 {
-        let mut input = String::new();
+        println!("Enter `quit` to quit the program or hit Ctrl+c");
         loop {
-            match io::stdin().read_line(&mut input) {
-                Ok(_) => break,
-                Err(err) => println!("ERROR: {err}"),
+            let mut input = String::new();
+            loop {
+                match io::stdin().read_line(&mut input) {
+                    Ok(_) => break,
+                    Err(err) => println!("ERROR: {err}"),
+                }
             }
+            let input = input.trim();
+            if input == "quit" {
+                break;
+            }
+            hasher.write(input.as_bytes());
+            println!("{}", hasher.finish());
+            hasher = DefaultHasher::new();
         }
-        hasher.write(input.trim().as_bytes());
-        println!("{}", hasher.finish());
         return;
     }
     for ele in path {
